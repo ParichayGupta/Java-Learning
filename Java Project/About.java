@@ -13,11 +13,11 @@ class About extends JPanel
 	About(FDemo f)
 	{
 		setLayout(null);
-
+		// fonts 
 		Font fo1=new Font("Microsoft Tai Le",Font.BOLD,15);
 		Font fo2=new Font("Microsoft Tai Le",Font.BOLD,20);
 		Font fo3=new Font("Microsoft Tai Le",Font.BOLD,50);
-		
+		// Google Colors
 		Color y=new Color(251,188,5);
 		Color b=new Color(66,133,244);
 		Color gr=new Color(52,168,83);
