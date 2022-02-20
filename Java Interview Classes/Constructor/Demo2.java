@@ -15,7 +15,7 @@ class Demo
 {
 	public static void main(String args[])
 	{
-		A a=new A();
-		a.show();
+		A a=new A(); // Will print Class A Constructor.
+		a.show(); // will print Class A Method.
 	}	
 }

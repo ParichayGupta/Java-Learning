@@ -18,12 +18,12 @@ class Admin extends JPanel
 	Admin(FDemo f)
 	{
 		setLayout(null);
-		
+		// Fonts
 		Font fo1=new Font("Microsoft Tai Le",Font.PLAIN,15);
 		Font fo2=new Font("Microsoft Tai Le",Font.BOLD,15);
 		Font fo3=new Font("Microsoft Tai Le",Font.BOLD,50);
 		Font fo4=new Font("Microsoft Tai Le",Font.BOLD,25);
-		
+		// Google Colors
 		Color y=new Color(251,188,5);
 		Color b=new Color(66,133,244);
 		Color gr=new Color(52,168,83);
@@ -101,12 +101,12 @@ class Instructions extends JPanel implements ActionListener
 	Instructions()
 	{
 		setLayout(null);
-	
+	// FOnts
 		Font fo1=new Font("Microsoft Tai Le",Font.PLAIN,15); 
 		Font fo2=new Font("Microsoft Tai Le",Font.BOLD,15);
 		Font fo3=new Font("Microsoft Tai Le",Font.BOLD,50);
 		Font fo4=new Font("Microsoft Tai Le",Font.BOLD,25);
-		
+		// Google Fonts
 		Color y=new Color(251,188,5);
 		Color b=new Color(66,133,244);
 		Color gr=new Color(52,168,83);
@@ -177,6 +177,7 @@ class Instructions extends JPanel implements ActionListener
 	
 	public void paintComponent(Graphics g)
 	{
+		// Google Colors
 		Color y=new Color(251,188,5);
 		Color b=new Color(66,133,244);
 		Color gr=new Color(52,168,83);
