@@ -1,0 +1,52 @@
+<html>
+<head>
+<style type="text/css">
+p
+{
+	background-color:yellow;
+	color:black;
+}
+font
+{
+background-color:black;
+color:yellow;
+}
+</style>
+<script type="text/javascript">
+c=1;
+function show()
+{
+if(c==1)
+{
+	d=new Date();
+	document.getElementById('h').innerHTML=d.getHours();
+	document.getElementById('m').innerHTML=d.getMinutes();
+	document.getElementById('s').innerHTML=d.getSeconds();
+	document.getElementById('p').style.background="yellow";
+	c++;
+}	
+else
+{
+	d=new Date();
+	document.getElementById('h').innerHTML=d.getHours();
+	document.getElementById('m').innerHTML=d.getMinutes();
+	document.getElementById('s').innerHTML=d.getSeconds();
+	document.getElementById('p').style.background="black";
+	c--;
+}	
+	t=setTimeout(show,1000);
+}
+
+</script>
+</head>
+
+<body onload="show()">
+<center>
+<p id="p" width="100"  height="100">
+<font id="h" color="red"></font> :
+<font id="m"></font> :
+<font id="s"></font>
+</p>
+</center>
+</body>
+</html>

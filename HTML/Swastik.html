@@ -1,0 +1,33 @@
+<html>
+<head>
+<script type="text/javascript">
+
+
+
+document.write("<table cellpadding='5' bgcolor='pink'>");
+for(i = 1 ; i <= 11 ; i++)
+{
+	document.write("<tr>");
+	for(j=1 ; j <= 11 ; j++)
+	{	
+		document.write("<td>");
+		if(i==6||j==6||(i==1&&j>=6)||(j==11&&i>=6)||(i==11&&j<=6)||(j==1&&i<=6)||(i==3&&j==3)||(i==9&&j==9)||(i==3&&j==9)||(i==9&&j==3))
+		{
+			document.write("*");
+		}	
+		else
+		{
+			document.write("&nbsp;");
+		}
+		document.write("</td>");
+	}
+	document.write("</tr>");
+}
+document.write("</table>");
+
+
+</script>
+</head>
+<body>
+</body>
+</html>

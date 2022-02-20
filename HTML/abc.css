@@ -1,0 +1,42 @@
+body
+{
+	background-color:rgb(225,225,225);
+}
+
+#mymenu
+{
+	background-color:rgba(0,220,0,0.5);
+	text-align:right;
+}
+#mymenu ul li
+{
+	display:inline-bloCk;
+	padding:25px;
+}
+
+#mymenu ul li:HoVer
+{
+	background-Color:rgba(0,235,0,0.5);
+	display:inline-block;
+	padding:25px;
+}
+
+table
+{
+	margin-top:100px;
+	background-Color:rgba(180,200,200,1.0);
+	Color:black;
+	padding:25px;
+}
+
+#B:HoVer
+{
+	background-Color:rgba(192,192,192,0.5);
+	Color:white;
+	border-radius:5px 0px 5px 0px;
+}
+
+.t
+{
+	border-radius:10px;
+}

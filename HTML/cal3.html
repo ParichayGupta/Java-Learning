@@ -1,0 +1,464 @@
+<html>
+<head>
+<style type="text/css">
+@import url('https://fonts.googleapis.com/css?family=Roboto:100,300,400');
+
+body {
+  background: #000;
+}
+
+.container {
+  margin-top: 100px;
+  margin-bottom: 25px;
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Fixed px on height and width. Position buttons within using flexbox */
+
+.calculator {
+  align-content: flex-start;
+  align-items: flex-start;
+  background-color: #202020;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  font-family: 'Roboto', sans-serif;
+  height: 550px;
+  justify-content: flex-start;
+  margin: 0 auto;
+  overflow: hidden;
+  width: 340px;
+}
+
+/* Button defaults */
+
+.calculator button {
+  border: 0;
+  cursor: pointer;
+  display: block;
+  font-size: 32px;
+  font-weight: 300;
+  height: 85px;
+  line-height: 85px;
+  margin-left: 0;
+  padding: 0;
+  text-align: center;
+  width: 85px;
+  transition: opacity .2s ease-out;
+  font-family: 'Roboto', sans-serif;
+}
+
+.calculator button:hover{
+  opacity: .9;
+}
+
+.calculator button:active, .calculator button.active{
+  opacity: .8;
+}
+
+/* Display area */
+
+.calculator-display {
+  color: white;
+  flex-grow: 1;
+  font-size: 87px;
+  font-weight: 100;
+  height: 85px;
+  line-height: 67px;
+  padding-right: 10px;
+  padding-top: 40px;
+  text-align: right;
+}
+
+/* Brief blink animation */
+
+.blink {
+  animation: blinker .1s linear 1;
+}
+
+@keyframes blinker {  
+  50% { 
+    opacity: 0; 
+  }
+}
+
+/* Flex keyboard layout */
+
+.calculator-keyboard {
+  align-content: flex-start;
+  align-items: flex-start;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+/* Number keys (0-9, C, +/-, %) */
+
+.calculator-keyboard_container_numbers {
+  align-content: flex-start;
+  align-items: flex-start;
+  display: flex;
+  flex-basis: 75%;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+button.calculator-keyboard_number_key {
+  background-color: #c7c7c7;
+  color: #424346;
+  outline: 1px solid #949599;
+}
+
+/* Specific alignment for "0" key */
+
+button.calculator-keyboard_number_key[value="0"]{
+  margin-left: none;
+  padding-left: 1.05em;
+  text-align: left;
+}
+
+/* C, +/- and % */
+
+button.calculator-keyboard_number_key:nth-child(-n+3) {
+   background-color: #afb0b5;
+   font-size: 26px;
+}
+
+/* Operator (orange) keys */
+
+.calculator-keyboard_container_operators {
+  flex-basis: 25%;
+}
+
+button.calculator-keyboard_operator_key {
+  background-color: #f98410; 
+  color: #fff6f9;
+  flex-grow: 1;
+  font-size: 36px;
+  outline: 1px solid #ca5200;
+  font-weight: 100;
+}
+
+/* Fix for uncentered 'x' char (due to font selection) */
+button.calculator-keyboard_operator_key span{
+ position: relative;
+ top: -5px;
+}
+
+/* Button order */
+
+.calculator-keyboard button[value="."] {
+  order: 11;
+}
+.calculator-keyboard button[value="0"] {
+  order: 10;
+  flex-grow: 2;
+}
+.calculator-keyboard button[value="1"] {
+  order: 7;
+}
+.calculator-keyboard button[value="2"] {
+  order: 8;
+}
+.calculator-keyboard button[value="3"] {
+  order: 9;
+}
+.calculator-keyboard button[value="4"] {
+  order: 4;
+}
+.calculator-keyboard button[value="5"] {
+  order: 5;
+}
+.calculator-keyboard button[value="6"] {
+  order: 6;
+}
+.calculator-keyboard button[value="7"] {
+  order: 1;
+}
+.calculator-keyboard button[value="8"] {
+  order: 2; 
+}
+.calculator-keyboard button[value="9"] {
+  order: 3;
+}
+
+</style>
+
+<script type="text/javascript">
+
+let calculator = {
+  
+    // Initialise defaults
+    data: {
+      maxChars: 10,
+      storedResult: null,
+      currentValue: '0',
+      currentOperation: null,
+
+    // Map the keys
+    mapKeys: { 
+      48 : { type: 'input', value:  '0' },
+      49 : { type: 'input', value:  '1' },
+      50 : { type: 'input', value:  '2' },
+      51 : { type: 'input', value:  '3' },
+      52 : { type: 'input', value:  '4' },
+      53 : { type: 'input', value:  '5' },
+      54 : { type: 'input', value:  '6' },
+      55 : { type: 'input', value:  '7' },
+      56 : { type: 'input', value:  '8' },
+      57 : { type: 'input', value:  '9' },
+      190: { type: 'input', value:  '.' },
+      88 : { type: 'operation', value:  'exponent' },
+      47 : { type: 'operation', value:  'division' },
+      221: { type: 'operation', value:  'multiply' },
+      189: { type: 'operation', value:  'subtract' },
+      187: { type: 'operation', value:  'sum' },
+      67 : { type: 'clear', value:  'clear' },
+      13 : { type: 'result', value:  null },
+      8  : { type: 'delete', value:  null },
+      84 : { type: 'toggle', value:  'toggle' },
+    },
+  },
+  
+  // Receive keyboard input (via data-keycode) & press the corresponding button
+
+  activateButtonWithKeypress (keyCode){
+    const chooseBtn = document.querySelectorAll(`.calculator button[data-keycode="${keyCode}"]`)[0];
+    if (chooseBtn) {
+      chooseBtn.classList.toggle('active');
+      setTimeout(() => {
+        chooseBtn.classList.toggle('active');
+      }, 150);
+    }
+  },
+  
+  // Select all buttons & map to corresponding type
+
+  bindButtons () {
+    const buttons = document.querySelectorAll('.calculator button');
+    const mapKeys = calculator.data.mapKeys;
+    Array.from(buttons).forEach((button) => {
+      button.addEventListener('click', (event) => {
+        this.processUserInput(mapKeys[event.target.dataset.keycode])
+      });
+    });
+  },
+  
+  bindKeyboard () {
+    document.addEventListener('keydown', (event) => {
+      const mapKeys = calculator.data.mapKeys;
+      let keyCode = event.keyCode
+
+      // binds shift + 7 to 'divide by'
+      if (keyCode === 55 && event.shiftKey) {
+        keyCode = 47;
+      }
+      if (mapKeys[keyCode]) {
+        this.processUserInput(mapKeys[keyCode])
+        this.activateButtonWithKeypress(keyCode)
+      }
+    });
+  },
+  
+  // Blinks display content when numbers are pressed
+
+  blinkDisplay () {
+    const blinkDisplay = document.querySelector('.calculator-display')
+    blinkDisplay.classList.toggle('blink')
+    setTimeout(() => {
+      blinkDisplay.classList.toggle('blink')
+    }, 150);
+  },
+
+  // Perform the calculation!
+  
+  calculate () {
+    // Initialise and convert input to number
+    const oldValue = parseFloat(this.data.storedResult, 10)
+    const operation = this.data.currentOperation
+    const newValue = parseFloat(this.data.currentValue, 10)
+    let resultValue = 0
+
+    // Performs calculation of numbers determined by operator value
+    if (this.data.currentOperation === 'multiply') {
+      resultValue = oldValue * newValue;
+    }
+    if (this.data.currentOperation === 'division') {
+      resultValue = oldValue / newValue;
+    }
+    if (this.data.currentOperation === 'subtract') {
+      resultValue = oldValue - newValue;
+    }
+    if (this.data.currentOperation === 'sum') {
+      const multiplierFix = 1000000000;
+      // resultValue = oldValue + newValue;
+      resultValue = (((oldValue * multiplierFix) + (newValue * multiplierFix)) / multiplierFix)
+    }
+    if (this.data.currentOperation === 'exponent') {
+      resultValue = Math.pow(oldValue, newValue);
+    }
+    this.data.storedResult = null;
+    this.data.currentValue = '' + resultValue;
+    this.updateDisplay();
+  },
+  
+  // Resets defaults and clears display for 'C' button
+  clearAll () {
+    this.data.currentOperation = null;
+    this.data.storedResult = null;
+    this.data.currentValue = '0';
+    this.updateDisplay();
+  },
+  
+  // Resets current value
+  clearCurrentValue () {
+    this.data.currentValue = '0';
+    this.updateDisplay();
+  },
+  
+   // Removes last entered number if backspaced
+  deleteNumber () {
+    const newValue = this.data.currentValue.slice(0, -1);
+    if (newValue === '') {
+      this.blinkDisplay();
+      this.clearCurrentValue();
+    } else {
+      this.data.currentValue = newValue;
+      this.updateDisplay();
+    }
+  },
+  
+  // Receives user input type and launches corresponding function
+
+  processUserInput (userInput) {
+    if (userInput.type === 'input') {
+      this.setNumber(userInput.value)
+    }
+    if (userInput.type === 'operation') {
+      this.setOperation(userInput.value)
+    }
+    if (userInput.type === 'delete') {
+      this.deleteNumber();
+    }
+    if (userInput.type === 'result') {
+      this.showResult();
+    }
+    if (userInput.type === 'clear') {
+      this.clearAll();
+    }
+    if (userInput.type === 'toggle') {
+      this.toggleNumber();
+    }
+  },
+  
+  // Blinks display as required to prompt user
+
+  setNumber (newNumber) {
+    let currentValue = this.data.currentValue;
+    if (newNumber === '.' && currentValue.includes('.')) {
+      this.blinkDisplay();
+      return;
+    } 
+    if (currentValue.length === this.data.maxChars) {
+      this.blinkDisplay();
+      return;
+    }
+    if (currentValue === '0' && newNumber === '.') {
+      currentValue = '0.'
+    } else if (currentValue === '0' && newNumber !== '.') {
+      this.blinkDisplay();
+      currentValue = newNumber
+    } else {
+      currentValue += newNumber
+    }
+    this.data.currentValue = currentValue
+    this.updateDisplay()
+  },
+  
+  // Selects operator for calculation
+
+  setOperation (newOperation) {
+    if (this.data.currentOperation !== null && this.data.storedResult !== null) {
+      this.calculate()
+    }
+    this.data.storedResult = this.data.currentValue;
+    this.data.currentValue = '0'
+    this.data.currentOperation = newOperation;
+  },
+  
+  // When "=" is pressed, perform calculation and update the display
+
+  showResult () {
+    if (this.data.storedResult !== null) {
+      this.calculate()
+      this.updateDisplay();
+
+      // if null "=" was pressed first
+    } else {
+      this.blinkDisplay();
+    }
+  },
+  
+  // When toggle button is pressed, toggle negative '-'
+  toggleNumber () {
+    this.data.currentValue = (parseFloat(this.data.currentValue, 10) * -1) + '';
+    this.updateDisplay();
+  },
+  
+  // Add current value to display class
+  updateDisplay () {
+    document.querySelector('.calculator-display').innerHTML = this.data.currentValue
+  },
+  
+  // Function to initialise display and bindings
+  start () {
+    this.updateDisplay();
+    this.bindKeyboard();
+    this.bindButtons();
+  },
+    
+}
+
+// Start the app
+calculator.start()
+</script>
+</head>
+<body>
+<div class="container">
+      <div class="calculator">
+        <div class="calculator-display">0</div>
+        <div class="calculator-keyboard">
+          <div class="calculator-keyboard_container_numbers">
+            <button class="calculator-keyboard_number_key" type="button" data-keycode="67" value="clear">C</button>
+            <button class="calculator-keyboard_number_key" type="button" data-keycode="84" value="toggle">&#8314;&#8725;&#8331;</button>
+            <button class="calculator-keyboard_number_key" type="button" data-keycode="88" value="exponent">%</button>
+            <button class="calculator-keyboard_number_key" type="button" data-keycode="190" value=".">.</button>
+            <button class="calculator-keyboard_number_key" type="button" data-keycode="48" value="0">0</button>
+            <button class="calculator-keyboard_number_key" type="button" data-keycode="49" value="1">1</button>
+            <button class="calculator-keyboard_number_key" type="button" data-keycode="50" value="2">2</button>
+            <button class="calculator-keyboard_number_key" type="button" data-keycode="51" value="3">3</button>
+            <button class="calculator-keyboard_number_key" type="button" data-keycode="52" value="4">4</button>
+            <button class="calculator-keyboard_number_key" type="button" data-keycode="53" value="5">5</button>
+            <button class="calculator-keyboard_number_key" type="button" data-keycode="54" value="6">6</button>
+            <button class="calculator-keyboard_number_key" type="button" data-keycode="55" value="7">7</button>
+            <button class="calculator-keyboard_number_key" type="button" data-keycode="56" value="8">8</button>
+            <button class="calculator-keyboard_number_key" type="button" data-keycode="57" value="9">9</button>
+          </div>
+          <div class="calculator-keyboard_container_operators">
+            <button class="calculator-keyboard_operator_key" type="button" data-keycode="47" value="div">÷</button>
+            <button class="calculator-keyboard_operator_key" type="button" data-keycode="221" value="mult"><span>×</span></button>
+            <button class="calculator-keyboard_operator_key" type="button" data-keycode="189" value="subtract">−</button>
+            <button class="calculator-keyboard_operator_key" type="button" data-keycode="187" value="sum">+</button>
+            <button class="calculator-keyboard_operator_key" type="button" data-keycode="13" value="result">=</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+</body>
+</html>
